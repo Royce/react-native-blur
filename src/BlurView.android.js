@@ -77,6 +77,7 @@ class BlurView extends Component {
         viewRef={viewRef}
         blurRadius={this.blurRadius()}
         downsampleFactor={this.downsampleFactor()}
+        blurSpeed={this.props.blurSpeed}
         overlayColor={this.overlayColor()}
         style={[{ backgroundColor: 'transparent' }, style]}
       />
@@ -93,6 +94,7 @@ BlurView.propTypes = {
   downsampleFactor: PropTypes.number,
   overlayColor: PropTypes.string,
   viewRef: PropTypes.number.isRequired,
+  blurSpeed: PropTypes.number,
 };
 
 BlurView.defaultProps = {

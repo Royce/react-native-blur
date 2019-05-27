@@ -5,6 +5,7 @@
 
 @property (nonatomic, copy) NSString *blurType;
 @property (nonatomic, copy) NSNumber *blurAmount;
+@property (nonatomic) BOOL blurEnabled;
 
 @property (nonatomic, strong) BlurEffectWithAmount *blurEffect;
 @property (nonatomic, strong) UIVisualEffectView *blurEffectView;

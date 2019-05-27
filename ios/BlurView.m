@@ -31,6 +31,41 @@
   self.blurEffectView.frame = self.bounds;
 }
 
+
+- (void)setBlurEnabled:(BOOL)blurEnabled
+{
+    if (blurEnabled) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            if (self.blurEffectView) {
+                [_blurEffectView removeFromSuperview];
+            }
+            self.blurEffectView = [[UIVisualEffectView alloc] init];
+            [self updateBlurEffect];
+            
+            self.blurEffectView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+            self.blurEffectView.frame = self.bounds;
+            self.blurEffectView.alpha = 0;
+            [self.superview.superview insertSubview:self.blurEffectView atIndex:self.superview.subviews.count];
+            [UIView animateWithDuration:0.5 animations:^{
+                _blurEffectView.alpha = 1.0;
+            }];
+        });
+    } else {
+        if (self.blurEnabled && self.blurEffectView) {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [UIView animateWithDuration:0.5 animations:^{
+                    self.blurEffectView.alpha = 0;
+                } completion:^(BOOL finished) {
+                    [_blurEffectView removeFromSuperview];
+                    self.blurEffectView = nil;
+                }];
+            });
+        }
+    }
+    
+    _blurEnabled = blurEnabled;
+}
+
 - (void)setBlurType:(NSString *)blurType
 {
   if (blurType && ![self.blurType isEqual:blurType]) {

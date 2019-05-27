@@ -31,6 +31,7 @@ BlurView.propTypes = {
     'extraDark',
   ]),
   blurAmount: PropTypes.number,
+  blurEnabled: PropTypes.bool,
 };
 
 BlurView.defaultProps = {
