@@ -55,14 +55,15 @@ public class BlurViewManager extends SimpleViewManager<BlurringView> {
         view.setDownsampleFactor(factor);
     }
 
-    @ReactProp(name = "configuredBlurSpeed", defaultInt = defaultBlurSpeed)
+    @ReactProp(name = "blurSpeed", defaultInt = defaultBlurSpeed)
     public void setBlurSpeed(BlurringView view, int milliseconds) {
         configuredBlurSpeed = milliseconds;
     }
 
     @ReactProp(name = "viewRef")
     public void setViewRef(BlurringView view, int viewRef) {
-        if (viewRef == 0 || view.getParent() == null)
+        //if (viewRef == 0 || view.getParent() == null)
+        if (viewRef == 0 || context == null || context.getCurrentActivity() == null)
         {
             view.setBlurredView(null);
             view.invalidate();
@@ -73,8 +74,11 @@ public class BlurViewManager extends SimpleViewManager<BlurringView> {
             return;
         }
 
-        View v = ((ViewGroup) view.getParent()).getChildAt(0);
-        view.setBlurredView(v);
+        View v = context.getCurrentActivity().findViewById(viewRef);
+        //View v = ((ViewGroup) view.getParent()).getChildAt(0);
+        if (v != null) {
+            view.setBlurredView(v);
+        }
         animateBlurRadius(view, defaultRadius, configuredBlurRadius, configuredBlurSpeed);
     }
 

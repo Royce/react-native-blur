@@ -19,9 +19,9 @@ export default class Basic extends Component {
     super(props);
 
     this.state = {
-      showBlurs: true,
-      blurBlurType: 'light',
-      blurActiveSegment: 1,
+      showBlurs: false,
+      blurBlurType: 'dark',
+      blurActiveSegment: 2,
       vibrancyBlurType: 'dark',
       vibrancyActiveSegment: 2,
     };
@@ -43,7 +43,7 @@ export default class Basic extends Component {
     this.setState({vibrancyBlurType: value});
   }
 
-  renderBlurs() {
+  renderBlurs(enabled) {
     const tintColor = this.state.blurBlurType === 'xlight' ? 'black' : 'white';
 
     return (
@@ -57,8 +57,9 @@ export default class Basic extends Component {
             cannot contain any child views.
           */}
           <BlurView
+            blurEnabled={enabled}
             blurType={this.state.blurBlurType}
-            blurAmount={100}
+            blurAmount={10}
             style={[styles.blurView]} />
 
           <Text style={[styles.text, { color: tintColor }]}>
@@ -72,6 +73,7 @@ export default class Basic extends Component {
             onValueChange={(value) => {this._onBlurValueChange(value);}}
             tintColor={tintColor}
           />
+
         </View>
 
         {/*
@@ -79,6 +81,7 @@ export default class Basic extends Component {
           otherwise the vibrancy effect doesn't work.
         */}
         <VibrancyView
+          blurEnabled={enabled}
           blurType={this.state.vibrancyBlurType}
           blurAmount={10}
           style={[styles.container, styles.blurContainer]}>
@@ -107,8 +110,9 @@ export default class Basic extends Component {
           source={require('./bgimage.jpeg')}
           resizeMode="cover"
           style={styles.img}/>
+          <View style={{position:'absolute', left: 0, top: 230, height: 100, width:100, backgroundColor: 'red'}} />
 
-        { this.state.showBlurs ? this.renderBlurs() : null }
+        {this.renderBlurs(this.state.showBlurs)}
 
         <View
           style={styles.blurToggle}>

@@ -13,8 +13,10 @@
         self.blurEffectView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
         self.blurEffectView.frame = frame;
 
-        self.blurAmount = @10;
-        self.blurType = @"dark";
+        _blurDefaultedToEnabled = true;
+        _blurEnabled = true;
+        _blurAmount = @10;
+        _blurType = @"dark";
         [self updateBlurEffect];
 
         self.clipsToBounds = true;
@@ -35,22 +37,32 @@
 - (void)setBlurEnabled:(BOOL)blurEnabled
 {
     if (blurEnabled) {
-        dispatch_async(dispatch_get_main_queue(), ^{
-            if (self.blurEffectView) {
-                [_blurEffectView removeFromSuperview];
-            }
-            self.blurEffectView = [[UIVisualEffectView alloc] init];
-            [self updateBlurEffect];
-            
-            self.blurEffectView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
-            self.blurEffectView.frame = self.bounds;
-            self.blurEffectView.alpha = 0;
-            [self.superview.superview insertSubview:self.blurEffectView atIndex:self.superview.subviews.count];
-            [UIView animateWithDuration:0.5 animations:^{
-                _blurEffectView.alpha = 1.0;
-            }];
-        });
+        if (self.blurDefaultedToEnabled) {
+            self.blurDefaultedToEnabled = false;
+        }
+        else {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                if (self.blurEffectView) {
+                    [_blurEffectView removeFromSuperview];
+                }
+                self.blurEffectView = [[UIVisualEffectView alloc] init];
+                [self updateBlurEffect];
+                
+                self.blurEffectView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+                self.blurEffectView.frame = self.bounds;
+                self.blurEffectView.alpha = 0;
+                [self.superview.superview insertSubview:self.blurEffectView atIndex:self.superview.subviews.count];
+                [UIView animateWithDuration:0.5 animations:^{
+                    _blurEffectView.alpha = 1.0;
+                }];
+            });
+        }
     } else {
+        if (self.blurDefaultedToEnabled) {
+            self.blurDefaultedToEnabled = false;
+            [_blurEffectView removeFromSuperview];
+            self.blurEffectView = nil;
+        }
         if (self.blurEnabled && self.blurEffectView) {
             dispatch_async(dispatch_get_main_queue(), ^{
                 [UIView animateWithDuration:0.5 animations:^{
@@ -105,6 +117,8 @@
 
 - (void)updateBlurEffect
 {
+//  if (!self.blurEffectView) return;
+  
   UIBlurEffectStyle style = [self blurEffectStyle];
   self.blurEffect = [BlurEffectWithAmount effectWithStyle:style andBlurAmount:self.blurAmount];
   self.blurEffectView.effect = self.blurEffect;

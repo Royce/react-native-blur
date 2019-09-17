@@ -23,7 +23,7 @@ export default class Basic extends Component {
   constructor() {
     super();
     this.state = {
-      showBlur: true,
+      showBlur: false,
       viewRef: null,
       activeSegment: 2,
       blurType: 'dark',
@@ -31,12 +31,16 @@ export default class Basic extends Component {
   }
 
   imageLoaded() {
-    // Workaround for a tricky race condition on initial load.
-    InteractionManager.runAfterInteractions(() => {
-      setTimeout(() => {
-        this.setState({ viewRef: findNodeHandle(this.refs.backgroundImage) });
-      }, 500);
-    });
+    console.log('this.backgroundImage', this.backgroundImage);
+    this.setState({ viewRef: findNodeHandle(this.backgroundImage) });
+    console.log('node handle', findNodeHandle(this.backgroundImage));
+
+    // // Workaround for a tricky race condition on initial load.
+    // InteractionManager.runAfterInteractions(() => {
+    //   setTimeout(() => {
+    //     this.setState({ viewRef: findNodeHandle(this.backgroundImage) });
+    //   }, 500);
+    // });
   }
 
   _onChange(selected) {
@@ -51,7 +55,7 @@ export default class Basic extends Component {
     if (this.state.blurType === 'xlight') {tintColor.reverse();}
 
     return (
-      <View style={styles.container}>
+      <View style={[styles.container, {position: 'absolute', top:0, left:0, right:0, bottom:0}]}>
         {this.state.viewRef && <BlurView
           viewRef={this.state.viewRef}
           style={styles.blurView}
@@ -67,7 +71,7 @@ export default class Basic extends Component {
         />}
 
         <Text style={[styles.text, { color: tintColor[0] }]}>
-          Blur component (Android)
+          Blur component (Android) {!!this.state.viewRef + ''}
         </Text>
 
         <SegmentedControlTab
@@ -90,11 +94,17 @@ export default class Basic extends Component {
   render() {
     return (
       <View style={styles.container}>
-        <Image
-          source={require('./bgimage.jpeg')}
-          style={styles.image}
-          ref={'backgroundImage'}
-          onLoadEnd={this.imageLoaded.bind(this)} />
+        <View ref={img => {
+              this.backgroundImage = img;
+            }}
+            style={styles.container}
+            >
+          <Image
+            onLoadEnd={this.imageLoaded.bind(this)}
+            source={require('./bgimage.jpeg')}
+            style={styles.image} />
+          <View style={{backgroundColor: 'red', height: 30, width: 30}} />
+        </View>
 
         { this.state.showBlur ? this.renderBlurView() : null }
 
@@ -116,11 +126,9 @@ const styles = StyleSheet.create({
     backgroundColor: 'transparent',
   },
   image: {
+    flex: 1,
     position: 'absolute',
-    left: 0,
-    top: 0,
-    bottom: 0,
-    right: 0,
+    top: 0, left: 0, right: 0, bottom:0,
     resizeMode: 'cover',
     width: null,
     height: null,
